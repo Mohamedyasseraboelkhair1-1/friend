@@ -2,91 +2,60 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>صفحتي الشخصية</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      direction: rtl;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: white;
-      box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-    }
-    .search-container input {
-      padding: 7px 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      width: 200px;
-    }
-    .friend-label-top {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #1877f2;
-      font-weight: bold;
-      font-size: 16px;
-      user-select: none;
-    }
-    .settings-btn {
-      cursor: pointer;
-      font-size: 24px;
-      user-select: none;
-      position: relative;
-    }
-    .settings-menu {
-      position: absolute;
-      top: 50px;
-      right: 20px;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      border-radius: 8px;
-      width: 220px;
-      display: none;
-      z-index: 10;
-    }
-    .settings-menu div {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-    }
-    .settings-menu div:last-child {
-      border-bottom: none;
-    }
-    .settings-menu div:hover {
-      background: #f0f2f5;
-    }
-  </style>
+  <title>الملف الشخصي</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <header>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="ابحث عن المستخدمين والمنشورات" />
+    </div>
+    <div class="title">friend</div>
+    <button id="settingsBtn" title="الإعدادات">⚙️</button>
+  </header>
 
-<header>
-  <div class="search-container">
-    <input type="text" placeholder="ابحث في الموقع" />
+  <main>
+    <div class="profile-section">
+      <img src="https://via.placeholder.com/100" id="profileImage" alt="صورة الملف الشخصي" title="اضغط لتغيير الصورة" />
+      <h2 id="userDisplay"></h2>
+      <p id="maritalStatus"></p>
+    </div>
+
+    <section id="postsSection">
+      <textarea id="postInput" placeholder="اكتب منشورًا..."></textarea>
+      <button id="addPostBtn">نشر</button>
+      <div id="postsList"></div>
+    </section>
+  </main>
+
+  <div id="settingsMenu" class="hidden">
+    <button id="showProfileDetails">التفاصيل الشخصية</button>
+    <button id="editProfileDetails">تعديل التفاصيل</button>
   </div>
-  <div class="friend-label-top">Friend</div>
-  <div class="settings-btn" id="settingsBtn" title="الإعدادات">⚙️</div>
-  <div class="settings-menu" id="settingsMenu">
-    <div id="showProfileDetails">التفاصيل الشخصية</div>
-    <div id="editProfileDetails">تعديل التفاصيل</div>
+
+  <div id="profileContent" class="hidden">
+    <div id="profileDetails" class="hidden">
+      <h3>التفاصيل الشخصية</h3>
+      <p><strong>اسم المستخدم:</strong> <span id="userNameDisplay"></span></p>
+      <p><strong>كلمة المرور:</strong> <span id="passwordDisplay"></span></p>
+    </div>
+    <div id="profileEdit" class="hidden">
+      <h3>تعديل التفاصيل</h3>
+      <label>اسم المستخدم:</label><br />
+      <input type="text" id="userNameEdit" /><br /><br />
+      <label>كلمة المرور:</label><br />
+      <input type="password" id="passwordEdit" /><br /><br />
+      <label>الحالة الزوجية:</label><br />
+      <select id="maritalStatusEdit">
+        <option value="">اختر الحالة</option>
+        <option value="أعزب">أعزب</option>
+        <option value="متزوج">متزوج</option>
+        <option value="خاطب">خاطب</option>
+      </select><br /><br />
+      <button id="saveDetailsBtn">حفظ التعديلات</button>
+    </div>
   </div>
-</header>
 
-<script>
-  document.getElementById("settingsBtn").addEventListener("click", () => {
-    const menu = document.getElementById("settingsMenu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-  });
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
