@@ -1,154 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>تسجيل الدخول</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    direction: rtl;
-  }
-  .login-box {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    width: 320px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-  .login-box h2 {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #1877f2;
-  }
-  .login-box input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-  .login-box button {
-    width: 100%;
-    padding: 10px;
-    background: #1877f2;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .login-box button:hover {
-    background: #145dbf;
-  }
-  .error {
-    color: red;
-    margin-bottom: 10px;
-    text-align: center;
-  }
-  .register-link {
-    text-align: center;
-    margin-top: 10px;
-  }
-  .register-link a {
-    color: #1877f2;
-    text-decoration: none;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>تسجيل الدخول</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<div class="login-box">
-  <h2>تسجيل الدخول</h2>
-  <div id="errorMsg" class="error"></div>
-  <input type="text" id="username" placeholder="اسم المستخدم" />
-  <input type="password" id="password" placeholder="كلمة المرور" />
-  <button id="loginBtn">دخول</button>
-  <div class="register-link">
-    <small>ليس لديك حساب؟ <a href="#" id="showRegister">سجل الآن</a></small>
+  <div class="login-container">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="username" placeholder="اسم المستخدم" />
+    <input type="password" id="password" placeholder="كلمة المرور" />
+    <button id="loginBtn">دخول</button>
   </div>
-</div>
 
-<script>
-  // وظيفة حفظ حساب جديد في localStorage
-  function registerUser(username, password) {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    if(users.find(u => u.username === username)) {
-      return false; // اسم مستخدم موجود
-    }
-    users.push({ username, password, profilePic: '', maritalStatus: '', posts: [] });
-    localStorage.setItem('users', JSON.stringify(users));
-    return true;
-  }
-
-  // وظيفة محاولة تسجيل الدخول
-  function loginUser(username, password) {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    return users.find(u => u.username === username && u.password === password);
-  }
-
-  // تحكم الواجهة تسجيل الدخول / تسجيل جديد
-  const loginBox = document.querySelector('.login-box');
-  const errorMsg = document.getElementById('errorMsg');
-  const loginBtn = document.getElementById('loginBtn');
-  const showRegister = document.getElementById('showRegister');
-
-  let isRegisterMode = false;
-
-  showRegister.addEventListener('click', e => {
-    e.preventDefault();
-    isRegisterMode = !isRegisterMode;
-    if(isRegisterMode) {
-      loginBox.querySelector('h2').textContent = 'تسجيل حساب جديد';
-      loginBtn.textContent = 'تسجيل';
-      showRegister.textContent = 'العودة لتسجيل الدخول';
-      errorMsg.textContent = '';
-    } else {
-      loginBox.querySelector('h2').textContent = 'تسجيل الدخول';
-      loginBtn.textContent = 'دخول';
-      showRegister.textContent = 'سجل الآن';
-      errorMsg.textContent = '';
-    }
-  });
-
-  loginBtn.addEventListener('click', () => {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-    if(!username || !password) {
-      errorMsg.textContent = 'يرجى إدخال اسم المستخدم وكلمة المرور';
-      return;
-    }
-    if(isRegisterMode) {
-      // تسجيل جديد
-      if(registerUser(username, password)) {
-        alert('تم التسجيل بنجاح، يمكنك الآن تسجيل الدخول');
-        isRegisterMode = false;
-        loginBox.querySelector('h2').textContent = 'تسجيل الدخول';
-        loginBtn.textContent = 'دخول';
-        showRegister.textContent = 'سجل الآن';
-        errorMsg.textContent = '';
+  <script src="script.js"></script>
+  <script>
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      if(user && pass){
+        localStorage.setItem('authUser', user);
+        localStorage.setItem('authPass', pass);
+        location.href = 'profile.html';
       } else {
-        errorMsg.textContent = 'اسم المستخدم موجود بالفعل';
+        alert('يرجى إدخال اسم المستخدم وكلمة المرور');
       }
-    } else {
-      // تسجيل دخول
-      const user = loginUser(username, password);
-      if(user) {
-        // حفظ المستخدم الحالي
-        localStorage.setItem('authUser', JSON.stringify(user));
-        window.location.href = 'profile.html';
-      } else {
-        errorMsg.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
-      }
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
