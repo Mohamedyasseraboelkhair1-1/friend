@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Profil</title></head>
+<body>
+  <h1>أهلاً <span id="user"></span>!</h1>
+  <button id="logout">Logout</button>
+  <script>
+    const user = localStorage.getItem('authUser');
+    if (!user) location.href = 'index.html';
+    else document.getElementById('user').textContent = user;
+    document.getElementById('logout').onclick = () => {
+      localStorage.removeItem('authUser');
+      location.href = 'index.html';
+    };
+  </script>
+</body>
+</html>
