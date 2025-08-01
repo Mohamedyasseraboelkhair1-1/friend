@@ -57,7 +57,7 @@
     }
 
     .settings-menu div {
-      padding: 5px 10px;
+      padding: 6px 12px;
       cursor: pointer;
     }
 
@@ -87,7 +87,6 @@
       max-width: 800px;
       border-radius: 10px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      position: relative;
     }
 
     .username {
@@ -95,11 +94,6 @@
       font-weight: bold;
       margin-bottom: 10px;
       color: #1c1e21;
-    }
-
-    .status {
-      font-size: 16px;
-      color: #555;
     }
 
     .logout-btn {
@@ -111,40 +105,55 @@
       cursor: pointer;
     }
 
-    .details, .edit-form, .search-results {
+    .section {
       margin-top: 20px;
       background: #f9f9f9;
       padding: 15px;
       border-radius: 8px;
+      display: none;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 10px;
     }
 
     .detail-item {
       margin-bottom: 10px;
     }
 
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
+    .edit-form input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
     }
 
-    .overlay img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 10px;
-      border: 4px solid white;
+    .edit-form button {
+      padding: 10px;
+      background: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .search-results {
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 6px;
+      display: none;
     }
 
     .search-results div {
-      padding: 6px;
-      background: white;
+      padding: 10px;
       border-bottom: 1px solid #ccc;
       cursor: pointer;
     }
+
+    .search-results div:last-child {
+      border-bottom: none;
+    }
+
   </style>
 </head>
 <body>
@@ -156,8 +165,8 @@
       <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء" onkeydown="searchKeyDown(event)">
     </div>
     <div class="settings-menu" id="settingsMenu">
-      <div onclick="showDetails()">👁️ التفاصيل الشخصية</div>
-      <div onclick="showEditForm()">✏️ تغيير البيانات</div>
+      <div onclick="showSection('details')">التفاصيل الشخصية</div>
+      <div onclick="showSection('edit')">تعديل اسم المستخدم وكلمة المرور</div>
     </div>
   </div>
 
@@ -167,40 +176,38 @@
 
   <div class="profile-info">
     <div class="username">أهلاً <span id="user"></span>!</div>
-    <div class="status" id="status" style="display: none;"></div>
 
-    <div class="details" id="detailsSection" style="display: none;">
+    <!-- التفاصيل الشخصية -->
+    <div id="detailsSection" class="section">
+      <div class="section-title">التفاصيل الشخصية</div>
       <div class="detail-item">👤 اسم المستخدم: <span id="detailUsername"></span></div>
       <div class="detail-item">🔒 كلمة المرور: <span id="detailPassword">●●●●●</span>
         <button onclick="togglePassword()">إظهار</button>
       </div>
     </div>
 
-    <div class="edit-form" id="editForm" style="display: none;">
-      <label>اسم المستخدم الجديد:</label><br>
-      <input type="text" id="newUsername"><br>
-      <label>كلمة المرور الجديدة:</label><br>
-      <input type="text" id="newPassword"><br><br>
-      <button onclick="saveChanges()">حفظ التغييرات</button>
+    <!-- نموذج تعديل -->
+    <div id="editSection" class="section">
+      <div class="section-title">تعديل البيانات</div>
+      <div class="edit-form">
+        <label>اسم المستخدم الجديد:</label>
+        <input type="text" id="newUsername">
+        <label>كلمة المرور الجديدة:</label>
+        <input type="text" id="newPassword">
+        <button onclick="saveChanges()">حفظ التغييرات</button>
+      </div>
     </div>
 
-    <div class="search-results" id="searchResults" style="display: none;"></div>
+    <!-- نتائج البحث -->
+    <div class="search-results" id="searchResults"></div>
 
     <button class="logout-btn" id="logout">تسجيل الخروج</button>
-  </div>
-
-  <div class="overlay" id="overlay" onclick="closeOverlay()">
-    <img id="overlayImg" src="">
   </div>
 
   <script>
     const user = localStorage.getItem('authUser');
     let users = JSON.parse(localStorage.getItem('users') || '[]');
     let userData = users.find(u => u.username === user);
-
-    const profilePic = document.getElementById('profile-pic');
-    const overlay = document.getElementById('overlay');
-    const overlayImg = document.getElementById('overlayImg');
 
     if (!user || !userData) {
       location.href = 'index.html';
@@ -209,43 +216,31 @@
       document.getElementById('detailUsername').textContent = userData.username;
       document.getElementById('detailPassword').setAttribute('data-real', userData.password);
 
-      if (userData.status === 'متزوج' || userData.status === 'خاطب') {
-        const status = document.getElementById('status');
-        status.textContent = `الحالة الاجتماعية: ${userData.status}`;
-        status.style.display = 'block';
-      }
-
       const savedPic = localStorage.getItem('profilePic_' + user);
       if (savedPic) {
-        profilePic.style.backgroundImage = `url(${savedPic})`;
-        overlayImg.src = savedPic;
+        document.getElementById('profile-pic').style.backgroundImage = `url(${savedPic})`;
       }
 
-      profilePic.onclick = () => {
-        if (overlayImg.src) overlay.style.display = 'flex';
+      document.getElementById('profile-pic').onclick = () => {
+        alert("يمكنك رفع صورة هنا مستقبلاً");
       };
     }
-
-    document.getElementById('logout').onclick = () => {
-      localStorage.removeItem('authUser');
-      location.href = 'index.html';
-    };
 
     function toggleSettings() {
       const menu = document.getElementById('settingsMenu');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    function showDetails() {
-      document.getElementById('detailsSection').style.display = 'block';
-      document.getElementById('editForm').style.display = 'none';
-    }
+    function showSection(type) {
+      document.getElementById('detailsSection').style.display = type === 'details' ? 'block' : 'none';
+      document.getElementById('editSection').style.display = type === 'edit' ? 'block' : 'none';
 
-    function showEditForm() {
-      document.getElementById('editForm').style.display = 'block';
-      document.getElementById('detailsSection').style.display = 'none';
-      document.getElementById('newUsername').value = userData.username;
-      document.getElementById('newPassword').value = userData.password;
+      if (type === 'edit') {
+        document.getElementById('newUsername').value = userData.username;
+        document.getElementById('newPassword').value = userData.password;
+      }
+
+      document.getElementById('settingsMenu').style.display = 'none';
     }
 
     function togglePassword() {
@@ -254,19 +249,16 @@
       span.textContent = span.textContent === '●●●●●' ? real : '●●●●●';
     }
 
-    function closeOverlay() {
-      overlay.style.display = 'none';
-    }
-
     function saveChanges() {
       const newUsername = document.getElementById('newUsername').value.trim();
       const newPassword = document.getElementById('newPassword').value.trim();
+
       if (!newUsername || !newPassword) {
         alert('يرجى ملء البيانات');
         return;
       }
 
-      const updatedUsers = users.map(u => {
+      users = users.map(u => {
         if (u.username === user) {
           u.username = newUsername;
           u.password = newPassword;
@@ -274,19 +266,27 @@
         return u;
       });
 
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      localStorage.setItem('users', JSON.stringify(users));
       localStorage.setItem('authUser', newUsername);
       alert('تم تحديث البيانات');
       location.reload();
     }
 
+    document.getElementById('logout').onclick = () => {
+      localStorage.removeItem('authUser');
+      location.href = 'index.html';
+    };
+
     function searchKeyDown(e) {
       if (e.key === 'Enter') {
         const query = e.target.value.trim();
         if (!query) return;
+
         const results = users.filter(u => u.username.includes(query));
         const container = document.getElementById('searchResults');
         container.innerHTML = '';
+        container.style.display = 'block';
+
         if (results.length === 0) {
           container.innerHTML = '<div>لا يوجد مستخدم بهذا الاسم</div>';
         } else {
@@ -297,7 +297,6 @@
             container.appendChild(div);
           });
         }
-        container.style.display = 'block';
       }
     }
   </script>
