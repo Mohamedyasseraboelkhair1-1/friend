@@ -1,25 +1,40 @@
 <!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحتي الرئيسية</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+<html>
+<head><meta charset="UTF-8"><title>Login / Register</title></head>
 <body>
-    <header>
-        <h1>مرحباً بك في موقعي!</h1>
-    </header>
+  <h1>تسجيل الدخول أو تسجيل جديد</h1>
+  <form id="authForm">
+    <input id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+  <button id="toggle">تسجيل جديد</button>
 
-    <main>
-        <p>هذه هي صفحة HTML الأساسية لموقعك. يمكنك البدء من هنا لإضافة المزيد من المحتوى.</p>
-        <button id="welcomeButton">اضغط لرسالة ترحيب</button>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 موقعي. جميع الحقوق محفوظة.</p>
-    </footer>
-
-    <script src="script.js"></script>
+  <script>
+    const form = document.getElementById('authForm');
+    let isRegister = false;
+    document.getElementById('toggle').onclick = () => {
+      isRegister = !isRegister;
+      form.querySelector('button').textContent = isRegister ? 'Register' : 'Login';
+    };
+    form.onsubmit = e => {
+      e.preventDefault();
+      const u = username.value, p = password.value;
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (isRegister) {
+        if (users.find(x => x.username === u)) return alert('المستخدم موجود أصلاً');
+        users.push({ username: u, password: p });
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('تم التسجيل! تسجل الآن');
+        isRegister = false;
+        form.querySelector('button').textContent = 'Login';
+      } else {
+        if (users.find(x => x.username === u && x.password === p)) {
+          localStorage.setItem('authUser', u);
+          location.href = 'profile.html';
+        } else alert('بيانات غير صحيحة!');
+      }
+    };
+  </script>
 </body>
 </html>
