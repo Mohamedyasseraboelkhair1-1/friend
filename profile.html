@@ -2,60 +2,263 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>الملف الشخصي</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>البروفايل</title>
+  <style>
+    body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: white; direction: rtl; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 20px; background: white; position: relative;
+    }
+    .search-box input {
+      padding: 6px 10px; width: 250px;
+      border: 1px solid #ccc; border-radius: 5px;
+      font-size: 14px;
+      color: black; opacity: 0.7;
+    }
+    .search-box input:focus { opacity: 1; outline: none; }
+    .friend-logo {
+      color: #1877f2; font-size: 24px; font-weight: bold;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .settings-btn {
+      font-size: 22px; cursor: pointer; user-select: none;
+    }
+    .settings-menu {
+      position: absolute; top: 40px; right: 20px; background: #fff;
+      border: 1px solid #ccc; border-radius: 6px; padding: 5px 0;
+      display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.15); width: 180px;
+      z-index: 100;
+    }
+    .settings-menu div {
+      padding: 10px 15px; cursor: pointer; font-size: 14px;
+    }
+    .settings-menu div:hover { background: #f5f5f5; }
+    .profile-area {
+      text-align: center; margin: 20px auto; max-width: 600px;
+    }
+    .profile-pic {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 3px solid #1877f2; background: #ddd center/cover no-repeat;
+      margin: 0 auto 10px auto; cursor: pointer;
+    }
+    h2.username {
+      margin: 5px 0; font-size: 20px;
+    }
+    .post-area {
+      margin: 20px auto; max-width: 600px; background: #f9f9f9;
+      padding: 15px; border-radius: 8px;
+    }
+    .post-area textarea {
+      width: 100%; height: 80px; resize: none; font-size: 14px;
+      padding: 8px; border-radius: 5px; border: 1px solid #ccc;
+    }
+    .post-area input[type="file"] {
+      margin-top: 8px;
+    }
+    .post-area button {
+      margin-top: 8px; padding: 8px 16px;
+      background: #1877f2; color: white; border: none;
+      border-radius: 5px; cursor: pointer;
+    }
+    #postsList {
+      margin: 20px auto; max-width: 600px;
+    }
+    .post {
+      background: #fff; padding: 12px; border-radius: 8px;
+      margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .post .post-author { font-weight: bold; margin-bottom: 5px; }
+    .post .post-content { margin-bottom: 8px; white-space: pre-wrap; }
+    .post img, .post video {
+      max-width: 100%; border-radius: 6px; margin-top: 5px;
+    }
+    .hidden { display: none; }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="ابحث عن المستخدمين والمنشورات" />
-    </div>
-    <div class="title">friend</div>
-    <button id="settingsBtn" title="الإعدادات">⚙️</button>
-  </header>
 
-  <main>
-    <div class="profile-section">
-      <img src="https://via.placeholder.com/100" id="profileImage" alt="صورة الملف الشخصي" title="اضغط لتغيير الصورة" />
-      <h2 id="userDisplay"></h2>
-      <p id="maritalStatus"></p>
-    </div>
-
-    <section id="postsSection">
-      <textarea id="postInput" placeholder="اكتب منشورًا..."></textarea>
-      <button id="addPostBtn">نشر</button>
-      <div id="postsList"></div>
-    </section>
-  </main>
-
-  <div id="settingsMenu" class="hidden">
-    <button id="showProfileDetails">التفاصيل الشخصية</button>
-    <button id="editProfileDetails">تعديل التفاصيل</button>
+<header>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء" />
   </div>
-
-  <div id="profileContent" class="hidden">
-    <div id="profileDetails" class="hidden">
-      <h3>التفاصيل الشخصية</h3>
-      <p><strong>اسم المستخدم:</strong> <span id="userNameDisplay"></span></p>
-      <p><strong>كلمة المرور:</strong> <span id="passwordDisplay"></span></p>
-    </div>
-    <div id="profileEdit" class="hidden">
-      <h3>تعديل التفاصيل</h3>
-      <label>اسم المستخدم:</label><br />
-      <input type="text" id="userNameEdit" /><br /><br />
-      <label>كلمة المرور:</label><br />
-      <input type="password" id="passwordEdit" /><br /><br />
-      <label>الحالة الزوجية:</label><br />
-      <select id="maritalStatusEdit">
-        <option value="">اختر الحالة</option>
-        <option value="أعزب">أعزب</option>
-        <option value="متزوج">متزوج</option>
-        <option value="خاطب">خاطب</option>
-      </select><br /><br />
-      <button id="saveDetailsBtn">حفظ التعديلات</button>
-    </div>
+  <div class="friend-logo">Friend</div>
+  <div class="settings-btn" id="settingsBtn">⚙️</div>
+  <div class="settings-menu" id="settingsMenu">
+    <div id="showDetails">التفاصيل الشخصية</div>
+    <div id="showEdit">تعديل المعلومات</div>
   </div>
+</header>
 
-  <script src="script.js"></script>
+<div class="profile-area">
+  <div class="profile-pic" id="profilePic" title="اضغط لتغيير أو تكبير"></div>
+  <input type="file" id="profilePicInput" accept="image/*" class="hidden" />
+  <h2 class="username" id="displayUsername"></h2>
+</div>
+
+<div class="settings-content hidden" id="detailsContent">
+  <div><strong>اسم المستخدم:</strong> <span id="detailUsername"></span></div>
+  <div><strong>كلمة المرور:</strong> <span id="detailPassword"></span></div>
+</div>
+
+<div class="settings-content hidden" id="editContent">
+  <div>
+    <label>اسم المستخدم:</label><br />
+    <input type="text" id="editUsername" />
+  </div>
+  <div>
+    <label>كلمة المرور:</label><br />
+    <input type="password" id="editPassword" />
+  </div>
+  <button id="saveEditBtn">حفظ</button>
+</div>
+
+<div class="post-area">
+  <textarea id="postText" placeholder="اكتب شيئًا..."></textarea>
+  <input type="file" id="postMedia" accept="image/*,video/*" />
+  <button id="addPostBtn">نشر</button>
+</div>
+
+<div id="postsList"></div>
+
+<script>
+  // جلب معلومات من localStorage أو قيم افتراضية
+  let authUser = localStorage.getItem('authUser') || 'User1';
+  let authPass = localStorage.getItem('authPass') || '1234';
+  let profileImage = localStorage.getItem('profileImage') || '';
+  let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsMenu = document.getElementById('settingsMenu');
+  const detailsContent = document.getElementById('detailsContent');
+  const editContent = document.getElementById('editContent');
+  const showDetails = document.getElementById('showDetails');
+  const showEdit = document.getElementById('showEdit');
+  const detailUsername = document.getElementById('detailUsername');
+  const detailPassword = document.getElementById('detailPassword');
+  const editUsername = document.getElementById('editUsername');
+  const editPassword = document.getElementById('editPassword');
+  const saveEditBtn = document.getElementById('saveEditBtn');
+
+  const profilePic = document.getElementById('profilePic');
+  const profilePicInput = document.getElementById('profilePicInput');
+  const displayUsername = document.getElementById('displayUsername');
+
+  const addPostBtn = document.getElementById('addPostBtn');
+  const postText = document.getElementById('postText');
+  const postMedia = document.getElementById('postMedia');
+  const postsList = document.getElementById('postsList');
+
+  const searchInput = document.getElementById('searchInput');
+
+  function renderProfile(){
+    displayUsername.textContent = authUser;
+    if(profileImage) profilePic.style.backgroundImage = `url('${profileImage}')`;
+    else profilePic.style.backgroundImage = `url('https://via.placeholder.com/120?text=User')`;
+  }
+
+  renderProfile();
+
+  // الإعدادات
+  settingsBtn.addEventListener('click', () => {
+    settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
+    detailsContent.classList.add('hidden');
+    editContent.classList.add('hidden');
+  });
+  
+  showDetails.addEventListener('click', () => {
+    settingsMenu.style.display = 'none';
+    detailUsername.textContent = authUser;
+    detailPassword.textContent = authPass.replace(/./g,'*');
+    detailsContent.classList.remove('hidden');
+    editContent.classList.add('hidden');
+  });
+  
+  showEdit.addEventListener('click', () => {
+    settingsMenu.style.display = 'none';
+    editUsername.value = authUser;
+    editPassword.value = authPass;
+    editContent.classList.remove('hidden');
+    detailsContent.classList.add('hidden');
+  });
+
+  saveEditBtn.addEventListener('click', () => {
+    const u = editUsername.value.trim();
+    const p = editPassword.value.trim();
+    if(u && p){
+      authUser = u; authPass = p;
+      localStorage.setItem('authUser', u);
+      localStorage.setItem('authPass', p);
+      renderProfile();
+      alert('تم حفظ المعلومات!');
+      editContent.classList.add('hidden');
+    } else alert('املأ الحقول');
+  });
+
+  // تغيير الصورة
+  profilePic.addEventListener('click', () => {
+    profilePicInput.click();
+  });
+  profilePicInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(f){
+      const r = new FileReader();
+      r.onload = () => {
+        profileImage = r.result;
+        localStorage.setItem('profileImage', r.result);
+        renderProfile();
+      };
+      r.readAsDataURL(f);
+    }
+  });
+
+  // إدارة المنشورات
+  function renderPosts(filter=''){
+    postsList.innerHTML = '';
+    const f = filter.toLowerCase();
+    posts.filter(p =>
+      p.username.toLowerCase().includes(f) ||
+      (p.content && p.content.toLowerCase().includes(f))
+    ).forEach((p,i) => {
+      const d = document.createElement('div');
+      d.className = 'post';
+      d.innerHTML = `
+        <div class="post-author">${p.username}</div>
+        <div class="post-content">${p.content}</div>
+        ${p.media? (p.mediaType==='image'? `<img src="${p.media}">`: `<video src="${p.media}" controls></video>`) : ''}
+      `;
+      postsList.appendChild(d);
+    });
+  }
+  renderPosts();
+
+  addPostBtn.addEventListener('click', () => {
+    const t = postText.value.trim();
+    const f = postMedia.files[0];
+    if(!t && !f){ alert('اكتب أو اختر ملف'); return; }
+    const newPost = { username: authUser, content: t, media: null, mediaType: null };
+    if(f){
+      const r = new FileReader();
+      r.onload = () => {
+        newPost.media = r.result;
+        newPost.mediaType = f.type.startsWith('image')?'image':'video';
+        posts.unshift(newPost);
+        localStorage.setItem('posts', JSON.stringify(posts));
+        postText.value=''; postMedia.value='';
+        renderPosts(searchInput.value);
+      };
+      r.readAsDataURL(f);
+    } else {
+      posts.unshift(newPost);
+      localStorage.setItem('posts', JSON.stringify(posts));
+      postText.value=''; postMedia.value='';
+      renderPosts(searchInput.value);
+    }
+  });
+
+  searchInput.addEventListener('input', () => {
+    renderPosts(searchInput.value);
+  });
+</script>
 </body>
 </html>
