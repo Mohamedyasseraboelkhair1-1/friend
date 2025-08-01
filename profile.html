@@ -11,28 +11,29 @@
       margin: 0;
       padding: 0;
     }
-
     .header {
-      background-color: #1877f2;
-      color: white;
+      background-color: #fff;
       padding: 15px;
       text-align: center;
       font-size: 24px;
       font-weight: bold;
       position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
+    .header span {
+      color: #1877f2;
+    }
     .settings {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 15px;
+      left: 15px;
       cursor: pointer;
+      font-size: 20px;
     }
-
     .settings-menu {
       position: absolute;
-      top: 50px;
-      right: 10px;
+      top: 55px;
+      left: 10px;
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 6px;
@@ -40,20 +41,27 @@
       display: none;
       z-index: 999;
     }
-
     .settings-menu div {
       padding: 8px;
       cursor: pointer;
       border-bottom: 1px solid #eee;
     }
-
+    .search-box {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+    .search-box input {
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
     .cover {
       width: 100%;
       height: 200px;
       background: url('https://via.placeholder.com/1000x200') center/cover no-repeat;
       position: relative;
     }
-
     .profile-pic {
       width: 130px;
       height: 130px;
@@ -65,7 +73,6 @@
       background: #ddd center/cover no-repeat;
       cursor: pointer;
     }
-
     .profile-info {
       background-color: white;
       padding: 20px;
@@ -74,22 +81,11 @@
       border-radius: 10px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     .username {
       font-size: 22px;
       font-weight: bold;
       margin-bottom: 10px;
     }
-
-    .logout-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #e4e6eb;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
     .section {
       margin-top: 20px;
       background: #f9f9f9;
@@ -97,18 +93,11 @@
       border-radius: 8px;
       display: none;
     }
-
-    .section-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
     .edit-form input {
       width: 100%;
       padding: 8px;
       margin-bottom: 10px;
     }
-
     .edit-form button {
       padding: 10px;
       background: #1877f2;
@@ -117,42 +106,14 @@
       border-radius: 4px;
       cursor: pointer;
     }
-
-    .posts {
-      margin-top: 30px;
-    }
-
-    .post {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .post img, .post video {
-      max-width: 100%;
-      margin-top: 10px;
-      border-radius: 6px;
-    }
-
-    .add-post {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-
     .add-post textarea {
       width: 100%;
       height: 80px;
       padding: 10px;
     }
-
     .add-post input[type="file"] {
       margin-top: 10px;
     }
-
     .add-post button {
       margin-top: 10px;
       padding: 8px 20px;
@@ -162,187 +123,90 @@
       border-radius: 4px;
       cursor: pointer;
     }
+    .post {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      position: relative;
+    }
+    .post img, .post video {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    .post .actions {
+      margin-top: 10px;
+    }
+    .post button {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    #searchResults {
+      background: white;
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      top: 45px;
+      right: 15px;
+      z-index: 1000;
+      width: 200px;
+      display: none;
+    }
+    #searchResults div {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    صفحتي الشخصية
-    <div class="settings" onclick="toggleSettings()">⚙️</div>
-    <div class="settings-menu" id="settingsMenu">
-      <div onclick="showSection('details')">التفاصيل الشخصية</div>
-      <div onclick="showSection('edit')">تعديل الاسم وكلمة المرور</div>
-    </div>
+<div class="header">
+  <span>Friend</span>
+  <div class="settings">⚙️</div>
+  <div class="search-box">
+    <input type="text" placeholder="ابحث عن الأصدقاء أو المنشورات" id="searchInput" />
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<div class="cover">
+  <div class="profile-pic" id="profilePic"></div>
+  <input type="file" id="uploadPic" accept="image/*" style="display:none;" />
+</div>
+
+<div class="profile-info">
+  <div class="username" id="user"></div>
+
+  <div class="add-post">
+    <textarea id="postText" placeholder="ماذا يدور في بالك؟"></textarea>
+    <input type="file" id="postMedia" accept="image/*,video/*">
+    <button onclick="addPost()">نشر</button>
   </div>
 
-  <div class="cover">
-    <div class="profile-pic" id="profilePic" title="اضغط لتغيير الصورة"></div>
-    <input type="file" id="uploadPic" accept="image/*" style="display:none">
-  </div>
+  <div id="postsContainer"></div>
+</div>
 
-  <div class="profile-info">
-    <div class="username">مرحبًا، <span id="user"></span></div>
+<div class="settings-menu" id="settingsMenu">
+  <div onclick="showSection('detailsSection')">التفاصيل الشخصية</div>
+  <div onclick="showSection('editSection')">تعديل الاسم وكلمة المرور</div>
+</div>
 
-    <!-- التفاصيل -->
-    <div id="detailsSection" class="section">
-      <div class="section-title">التفاصيل الشخصية</div>
-      <div>👤 اسم المستخدم: <span id="detailUsername"></span></div>
-      <div>🔒 كلمة المرور: <span id="detailPassword">●●●●●</span> <button onclick="togglePassword()">إظهار</button></div>
-    </div>
+<div class="profile-info section" id="detailsSection">
+  <p><strong>اسم المستخدم:</strong> <span id="detailsUsername"></span></p>
+  <p><strong>كلمة المرور:</strong> <span id="detailsPassword"></span></p>
+</div>
 
-    <!-- التعديل -->
-    <div id="editSection" class="section">
-      <div class="section-title">تعديل البيانات</div>
-      <div class="edit-form">
-        <input type="text" id="newUsername" placeholder="اسم المستخدم الجديد">
-        <input type="text" id="newPassword" placeholder="كلمة المرور الجديدة">
-        <button onclick="saveChanges()">حفظ التغييرات</button>
-      </div>
-    </div>
+<div class="profile-info section" id="editSection">
+  <form onsubmit="updateUser(event)" class="edit-form">
+    <input type="text" id="newUsername" placeholder="اسم المستخدم الجديد">
+    <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة">
+    <button type="submit">تحديث</button>
+  </form>
+</div>
 
-    <!-- منشورات -->
-    <div class="add-post">
-      <textarea id="postText" placeholder="بم تفكر؟"></textarea>
-      <input type="file" id="postMedia" accept="image/*,video/*">
-      <button onclick="addPost()">نشر</button>
-    </div>
-
-    <div class="posts" id="postsContainer"></div>
-
-    <button class="logout-btn" id="logout">تسجيل الخروج</button>
-  </div>
-
-  <script>
-    const user = localStorage.getItem('authUser');
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
-    let posts = JSON.parse(localStorage.getItem('posts_' + user) || '[]');
-    let userData = users.find(u => u.username === user);
-
-    if (!user || !userData) location.href = 'index.html';
-
-    document.getElementById('user').textContent = userData.username;
-    document.getElementById('detailUsername').textContent = userData.username;
-    document.getElementById('detailPassword').setAttribute('data-real', userData.password);
-
-    document.getElementById('logout').onclick = () => {
-      localStorage.removeItem('authUser');
-      location.href = 'index.html';
-    };
-
-    function toggleSettings() {
-      const menu = document.getElementById('settingsMenu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function showSection(type) {
-      document.getElementById('detailsSection').style.display = type === 'details' ? 'block' : 'none';
-      document.getElementById('editSection').style.display = type === 'edit' ? 'block' : 'none';
-
-      if (type === 'edit') {
-        document.getElementById('newUsername').value = userData.username;
-        document.getElementById('newPassword').value = userData.password;
-      }
-
-      document.getElementById('settingsMenu').style.display = 'none';
-    }
-
-    function togglePassword() {
-      const span = document.getElementById('detailPassword');
-      const real = span.getAttribute('data-real');
-      span.textContent = span.textContent === '●●●●●' ? real : '●●●●●';
-    }
-
-    function saveChanges() {
-      const newUsername = document.getElementById('newUsername').value.trim();
-      const newPassword = document.getElementById('newPassword').value.trim();
-      if (!newUsername || !newPassword) {
-        alert('يرجى إدخال البيانات');
-        return;
-      }
-
-      users = users.map(u => {
-        if (u.username === user) {
-          u.username = newUsername;
-          u.password = newPassword;
-        }
-        return u;
-      });
-
-      localStorage.setItem('users', JSON.stringify(users));
-      localStorage.setItem('authUser', newUsername);
-      alert('تم التحديث');
-      location.reload();
-    }
-
-    // تعديل الصورة
-    const profilePic = document.getElementById('profilePic');
-    const uploadPic = document.getElementById('uploadPic');
-    const savedPic = localStorage.getItem('profilePic_' + user);
-    if (savedPic) profilePic.style.backgroundImage = `url(${savedPic})`;
-
-    profilePic.onclick = () => uploadPic.click();
-    uploadPic.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const url = reader.result;
-        profilePic.style.backgroundImage = `url(${url})`;
-        localStorage.setItem('profilePic_' + user, url);
-      };
-      reader.readAsDataURL(file);
-    };
-
-    // المنشورات
-    function renderPosts() {
-      const container = document.getElementById('postsContainer');
-      container.innerHTML = '';
-      posts.reverse().forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'post';
-        div.innerHTML = `<div>${p.text}</div>`;
-        if (p.media) {
-          if (p.mediaType.startsWith('image')) {
-            div.innerHTML += `<img src="${p.media}">`;
-          } else if (p.mediaType.startsWith('video')) {
-            div.innerHTML += `<video src="${p.media}" controls></video>`;
-          }
-        }
-        container.appendChild(div);
-      });
-    }
-
-    function addPost() {
-      const text = document.getElementById('postText').value.trim();
-      const fileInput = document.getElementById('postMedia');
-      const file = fileInput.files[0];
-
-      if (!text && !file) return alert("أدخل نصًا أو أضف وسائط!");
-
-      const newPost = { text };
-
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          newPost.media = reader.result;
-          newPost.mediaType = file.type;
-          posts.push(newPost);
-          localStorage.setItem('posts_' + user, JSON.stringify(posts));
-          document.getElementById('postText').value = '';
-          fileInput.value = '';
-          renderPosts();
-        };
-        reader.readAsDataURL(file);
-      } else {
-        posts.push(newPost);
-        localStorage.setItem('posts_' + user, JSON.stringify(posts));
-        document.getElementById('postText').value = '';
-        renderPosts();
-      }
-    }
-
-    renderPosts();
-  </script>
-
+<script src="profile.js"></script>
 </body>
 </html>
