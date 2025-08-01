@@ -3,13 +3,11 @@ if (!user) location.href = 'index.html';
 
 document.getElementById('user').textContent = user;
 
-// المستخدمين المخزنين
 const users = JSON.parse(localStorage.getItem('users')) || [];
 const currentUser = users.find(u => u.username === user);
 const postsKey = 'posts_' + user;
 let posts = JSON.parse(localStorage.getItem(postsKey)) || [];
 
-// عرض صورة البروفايل
 const profilePic = document.getElementById('profilePic');
 const uploadPic = document.getElementById('uploadPic');
 const savedPic = localStorage.getItem('profilePic_' + user);
@@ -28,12 +26,20 @@ uploadPic.onchange = e => {
   reader.readAsDataURL(file);
 };
 
-// إعدادات
 const settingsIcon = document.querySelector('.settings');
 const settingsMenu = document.getElementById('settingsMenu');
-settingsIcon.onclick = () => {
-  settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
-};
+
+settingsIcon.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isVisible = settingsMenu.style.display === 'block';
+  settingsMenu.style.display = isVisible ? 'none' : 'block';
+});
+
+document.addEventListener('click', function (event) {
+  if (!settingsMenu.contains(event.target) && event.target !== settingsIcon) {
+    settingsMenu.style.display = 'none';
+  }
+});
 
 function showSection(id) {
   document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
@@ -61,6 +67,8 @@ function updateUser(e) {
   users[index] = { username: newUsername, password: newPassword };
   localStorage.setItem('users', JSON.stringify(users));
   localStorage.setItem('authUser', newUsername);
+  localStorage.setItem('posts_' + newUsername, JSON.stringify(posts));
+  localStorage.removeItem(postsKey);
 
   alert('تم التحديث بنجاح!');
   location.reload();
@@ -71,7 +79,12 @@ function addPost() {
   const text = document.getElementById('postText').value.trim();
   const fileInput = document.getElementById('postMedia');
   const file = fileInput.files[0];
-  const newPost = { text, created: new Date().toISOString() };
+  const newPost = {
+    text,
+    created: new Date().toISOString(),
+    likes: 0,
+    comments: []
+  };
 
   const saveAndRender = () => {
     posts.push(newPost);
@@ -112,27 +125,46 @@ function deletePost(index) {
   }
 }
 
+function likePost(index) {
+  posts[index].likes += 1;
+  localStorage.setItem(postsKey, JSON.stringify(posts));
+  renderPosts();
+}
+
+function addComment(index) {
+  const commentInput = document.getElementById(`commentInput-${index}`);
+  const commentText = commentInput.value.trim();
+  if (!commentText) return;
+
+  posts[index].comments.push({ user, text: commentText });
+  localStorage.setItem(postsKey, JSON.stringify(posts));
+  renderPosts();
+}
+
 function renderPosts() {
   const container = document.getElementById('postsContainer');
   container.innerHTML = '';
   posts.slice().reverse().forEach((p, i) => {
+    const realIndex = posts.length - 1 - i;
     const div = document.createElement('div');
     div.className = 'post';
-    div.innerHTML = `<div>${p.text}</div>`;
-
-    if (p.media) {
-      if (p.mediaType.startsWith('image')) {
-        div.innerHTML += `<img src="${p.media}">`;
-      } else if (p.mediaType.startsWith('video')) {
-        div.innerHTML += `<video src="${p.media}" controls></video>`;
+    div.innerHTML = `
+      <div>${p.text}</div>
+      ${p.media ? (p.mediaType.startsWith('image') ?
+        `<img src="${p.media}">` :
+        `<video src="${p.media}" controls></video>`) : ''
       }
-    }
-
-    div.innerHTML += `
       <div class="actions">
-        <button onclick="editPost(${posts.length - 1 - i})">✏️ تعديل</button>
-        <button onclick="deletePost(${posts.length - 1 - i})">🗑️ حذف</button>
-      </div>`;
+        <button onclick="likePost(${realIndex})">👍 إعجاب (${p.likes})</button>
+        <button onclick="editPost(${realIndex})">✏️ تعديل</button>
+        <button onclick="deletePost(${realIndex})">🗑️ حذف</button>
+      </div>
+      <div class="comments">
+        <div>${p.comments.map(c => `<p><strong>${c.user}:</strong> ${c.text}</p>`).join('')}</div>
+        <input type="text" id="commentInput-${realIndex}" placeholder="اكتب تعليقًا...">
+        <button onclick="addComment(${realIndex})">💬 تعليق</button>
+      </div>
+    `;
     container.appendChild(div);
   });
 }
