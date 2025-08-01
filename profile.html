@@ -2,18 +2,17 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
+  <title>الملف الشخصي</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>البروفايل</title>
   <style>
-    body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: white; direction: rtl; }
+    body { margin: 0; font-family: Arial; background: #fff; direction: rtl; }
     header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 20px; background: white; position: relative;
+      padding: 10px 20px; position: relative; background-color: white;
     }
     .search-box input {
-      padding: 6px 10px; width: 250px;
+      padding: 6px 10px; width: 230px;
       border: 1px solid #ccc; border-radius: 5px;
-      font-size: 14px;
       color: black; opacity: 0.7;
     }
     .search-box input:focus { opacity: 1; outline: none; }
@@ -22,7 +21,7 @@
       position: absolute; left: 50%; transform: translateX(-50%);
     }
     .settings-btn {
-      font-size: 22px; cursor: pointer; user-select: none;
+      font-size: 22px; cursor: pointer;
     }
     .settings-menu {
       position: absolute; top: 40px; right: 20px; background: #fff;
@@ -31,9 +30,10 @@
       z-index: 100;
     }
     .settings-menu div {
-      padding: 10px 15px; cursor: pointer; font-size: 14px;
+      padding: 10px 15px; cursor: pointer;
     }
     .settings-menu div:hover { background: #f5f5f5; }
+
     .profile-area {
       text-align: center; margin: 20px auto; max-width: 600px;
     }
@@ -50,12 +50,10 @@
       padding: 15px; border-radius: 8px;
     }
     .post-area textarea {
-      width: 100%; height: 80px; resize: none; font-size: 14px;
+      width: 100%; height: 80px; resize: none;
       padding: 8px; border-radius: 5px; border: 1px solid #ccc;
     }
-    .post-area input[type="file"] {
-      margin-top: 8px;
-    }
+    .post-area input[type="file"] { margin-top: 8px; }
     .post-area button {
       margin-top: 8px; padding: 8px 16px;
       background: #1877f2; color: white; border: none;
@@ -74,13 +72,26 @@
       max-width: 100%; border-radius: 6px; margin-top: 5px;
     }
     .hidden { display: none; }
+
+    .settings-content {
+      max-width: 600px; margin: 10px auto; padding: 10px;
+      background: #f2f2f2; border-radius: 6px;
+    }
+    .settings-content input {
+      width: 100%; padding: 6px; margin-bottom: 8px;
+      border: 1px solid #ccc; border-radius: 5px;
+    }
+    .settings-content button {
+      padding: 8px 16px; background: #1877f2; color: white;
+      border: none; border-radius: 5px; cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
 <header>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء" />
+    <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء">
   </div>
   <div class="friend-logo">Friend</div>
   <div class="settings-btn" id="settingsBtn">⚙️</div>
@@ -92,7 +103,7 @@
 
 <div class="profile-area">
   <div class="profile-pic" id="profilePic" title="اضغط لتغيير أو تكبير"></div>
-  <input type="file" id="profilePicInput" accept="image/*" class="hidden" />
+  <input type="file" id="profilePicInput" accept="image/*" class="hidden">
   <h2 class="username" id="displayUsername"></h2>
 </div>
 
@@ -103,26 +114,25 @@
 
 <div class="settings-content hidden" id="editContent">
   <div>
-    <label>اسم المستخدم:</label><br />
-    <input type="text" id="editUsername" />
+    <label>اسم المستخدم:</label><br>
+    <input type="text" id="editUsername">
   </div>
   <div>
-    <label>كلمة المرور:</label><br />
-    <input type="password" id="editPassword" />
+    <label>كلمة المرور:</label><br>
+    <input type="password" id="editPassword">
   </div>
   <button id="saveEditBtn">حفظ</button>
 </div>
 
 <div class="post-area">
   <textarea id="postText" placeholder="اكتب شيئًا..."></textarea>
-  <input type="file" id="postMedia" accept="image/*,video/*" />
+  <input type="file" id="postMedia" accept="image/*,video/*">
   <button id="addPostBtn">نشر</button>
 </div>
 
 <div id="postsList"></div>
 
 <script>
-  // جلب معلومات من localStorage أو قيم افتراضية
   let authUser = localStorage.getItem('authUser') || 'User1';
   let authPass = localStorage.getItem('authPass') || '1234';
   let profileImage = localStorage.getItem('profileImage') || '';
@@ -159,27 +169,25 @@
 
   renderProfile();
 
-  // الإعدادات
   settingsBtn.addEventListener('click', () => {
-    settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
-    detailsContent.classList.add('hidden');
-    editContent.classList.add('hidden');
+    const visible = settingsMenu.style.display === 'block';
+    settingsMenu.style.display = visible ? 'none' : 'block';
   });
-  
+
   showDetails.addEventListener('click', () => {
-    settingsMenu.style.display = 'none';
     detailUsername.textContent = authUser;
-    detailPassword.textContent = authPass.replace(/./g,'*');
+    detailPassword.textContent = authPass.replace(/./g, '*');
     detailsContent.classList.remove('hidden');
     editContent.classList.add('hidden');
-  });
-  
-  showEdit.addEventListener('click', () => {
     settingsMenu.style.display = 'none';
+  });
+
+  showEdit.addEventListener('click', () => {
     editUsername.value = authUser;
     editPassword.value = authPass;
     editContent.classList.remove('hidden');
     detailsContent.classList.add('hidden');
+    settingsMenu.style.display = 'none';
   });
 
   saveEditBtn.addEventListener('click', () => {
@@ -190,15 +198,15 @@
       localStorage.setItem('authUser', u);
       localStorage.setItem('authPass', p);
       renderProfile();
-      alert('تم حفظ المعلومات!');
+      alert('تم حفظ التعديلات!');
       editContent.classList.add('hidden');
-    } else alert('املأ الحقول');
+    }
   });
 
-  // تغيير الصورة
   profilePic.addEventListener('click', () => {
     profilePicInput.click();
   });
+
   profilePicInput.addEventListener('change', e => {
     const f = e.target.files[0];
     if(f){
@@ -212,20 +220,19 @@
     }
   });
 
-  // إدارة المنشورات
   function renderPosts(filter=''){
     postsList.innerHTML = '';
     const f = filter.toLowerCase();
     posts.filter(p =>
       p.username.toLowerCase().includes(f) ||
       (p.content && p.content.toLowerCase().includes(f))
-    ).forEach((p,i) => {
+    ).forEach(p => {
       const d = document.createElement('div');
       d.className = 'post';
       d.innerHTML = `
         <div class="post-author">${p.username}</div>
         <div class="post-content">${p.content}</div>
-        ${p.media? (p.mediaType==='image'? `<img src="${p.media}">`: `<video src="${p.media}" controls></video>`) : ''}
+        ${p.media ? (p.mediaType==='image' ? `<img src="${p.media}">` : `<video src="${p.media}" controls></video>`) : ''}
       `;
       postsList.appendChild(d);
     });
@@ -235,7 +242,7 @@
   addPostBtn.addEventListener('click', () => {
     const t = postText.value.trim();
     const f = postMedia.files[0];
-    if(!t && !f){ alert('اكتب أو اختر ملف'); return; }
+    if(!t && !f){ alert('اكتب شيئًا أو أضف وسائط'); return; }
     const newPost = { username: authUser, content: t, media: null, mediaType: null };
     if(f){
       const r = new FileReader();
@@ -260,5 +267,6 @@
     renderPosts(searchInput.value);
   });
 </script>
+
 </body>
 </html>
