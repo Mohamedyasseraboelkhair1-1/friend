@@ -1,158 +1,151 @@
-// تحقق من تسجيل الدخول
-if(location.pathname.endsWith('profile.html')){
-  const user = localStorage.getItem('authUser');
-  const pass = localStorage.getItem('authPass');
-  if(!user || !pass){
-    location.href = 'index.html';
-  }
-}
-
-// تعريف المستخدم الحالي من التخزين المحلي
-let currentUser = {
-  username: localStorage.getItem('authUser') || '',
-  password: localStorage.getItem('authPass') || '',
-  profileImage: localStorage.getItem('profileImage') || 'https://via.placeholder.com/100',
-  maritalStatus: localStorage.getItem('maritalStatus') || ''
-};
+let authUser = localStorage.getItem('authUser') || 'User1';
+let authPass = localStorage.getItem('authPass') || '1234';
+let profileImage = localStorage.getItem('profileImage') || '';
+let posts = JSON.parse(localStorage.getItem('posts') || '[]');
 
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsMenu = document.getElementById('settingsMenu');
-const showProfileDetailsBtn = document.getElementById('showProfileDetails');
-const editProfileDetailsBtn = document.getElementById('editProfileDetails');
-const profileContent = document.getElementById('profileContent');
-const profileDetailsDiv = document.getElementById('profileDetails');
-const profileEditDiv = document.getElementById('profileEdit');
-const saveDetailsBtn = document.getElementById('saveDetailsBtn');
-const profileImage = document.getElementById('profileImage');
-const userDisplay = document.getElementById('userDisplay');
-const maritalStatusDisplay = document.getElementById('maritalStatus');
-const userNameDisplay = document.getElementById('userNameDisplay');
-const passwordDisplay = document.getElementById('passwordDisplay');
-const userNameEdit = document.getElementById('userNameEdit');
-const passwordEdit = document.getElementById('passwordEdit');
-const maritalStatusEdit = document.getElementById('maritalStatusEdit');
+const detailsContent = document.getElementById('detailsContent');
+const editContent = document.getElementById('editContent');
+const showDetails = document.getElementById('showDetails');
+const showEdit = document.getElementById('showEdit');
+const detailUsername = document.getElementById('detailUsername');
+const detailPassword = document.getElementById('detailPassword');
+const editUsername = document.getElementById('editUsername');
+const editPassword = document.getElementById('editPassword');
+const saveEditBtn = document.getElementById('saveEditBtn');
+
+const profilePic = document.getElementById('profilePic');
+const profilePicInput = document.getElementById('profilePicInput');
+const displayUsername = document.getElementById('displayUsername');
+
 const addPostBtn = document.getElementById('addPostBtn');
-const postInput = document.getElementById('postInput');
+const postText = document.getElementById('postText');
+const postMedia = document.getElementById('postMedia');
 const postsList = document.getElementById('postsList');
+
 const searchInput = document.getElementById('searchInput');
 
-// اظهار اسم المستخدم والحالة الزوجية
-function loadProfile(){
-  userDisplay.textContent = currentUser.username;
-  maritalStatusDisplay.textContent = currentUser.maritalStatus ? `الحالة الزوجية: ${currentUser.maritalStatus}` : '';
-  userNameDisplay.textContent = currentUser.username;
-  passwordDisplay.textContent = currentUser.password.replace(/./g, '*');
-  userNameEdit.value = currentUser.username;
-  passwordEdit.value = currentUser.password;
-  maritalStatusEdit.value = currentUser.maritalStatus || '';
-  profileImage.src = currentUser.profileImage;
+function renderProfile() {
+  displayUsername.textContent = authUser;
+  if (profileImage) profilePic.style.backgroundImage = `url('${profileImage}')`;
+  else profilePic.style.backgroundImage = `url('https://via.placeholder.com/120?text=User')`;
 }
-loadProfile();
 
-// التحكم بقائمة الإعدادات
+renderProfile();
+
 settingsBtn.addEventListener('click', () => {
-  if(settingsMenu.style.display === 'block'){
-    settingsMenu.style.display = 'none';
-    profileContent.style.display = 'none';
-  } else {
-    settingsMenu.style.display = 'block';
-    profileContent.style.display = 'none';
-  }
+  settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
 });
 
-// عرض التفاصيل الشخصية
-showProfileDetailsBtn.addEventListener('click', () => {
-  profileDetailsDiv.classList.remove('hidden');
-  profileEditDiv.classList.add('hidden');
-  profileContent.style.display = 'block';
-  settingsMenu.style.display = 'none';
+showDetails.addEventListener('click', () => {
+  detailUsername.textContent = authUser;
+  detailPassword.textContent = authPass.replace(/./g, '*');
+  detailsContent.classList.remove('hidden');
+  editContent.classList.add('hidden');
 });
 
-// عرض تعديل التفاصيل
-editProfileDetailsBtn.addEventListener('click', () => {
-  profileEditDiv.classList.remove('hidden');
-  profileDetailsDiv.classList.add('hidden');
-  profileContent.style.display = 'block';
-  settingsMenu.style.display = 'none';
+showEdit.addEventListener('click', () => {
+  editUsername.value = authUser;
+  editPassword.value = authPass;
+  editContent.classList.remove('hidden');
+  detailsContent.classList.add('hidden');
 });
 
-// حفظ التعديلات
-saveDetailsBtn.addEventListener('click', () => {
-  const newUser = userNameEdit.value.trim();
-  const newPass = passwordEdit.value.trim();
-  const newStatus = maritalStatusEdit.value;
-
-  if(newUser && newPass){
-    currentUser.username = newUser;
-    currentUser.password = newPass;
-    currentUser.maritalStatus = newStatus;
-    localStorage.setItem('authUser', newUser);
-    localStorage.setItem('authPass', newPass);
-    localStorage.setItem('maritalStatus', newStatus);
-    loadProfile();
+saveEditBtn.addEventListener('click', () => {
+  const u = editUsername.value.trim();
+  const p = editPassword.value.trim();
+  if (u && p) {
+    authUser = u;
+    authPass = p;
+    localStorage.setItem('authUser', u);
+    localStorage.setItem('authPass', p);
+    renderProfile();
     alert('تم حفظ التعديلات!');
-    profileContent.style.display = 'none';
-  } else {
-    alert('يرجى تعبئة اسم المستخدم وكلمة المرور.');
+    editContent.classList.add('hidden');
   }
 });
 
-// تغيير صورة الملف الشخصي
-profileImage.addEventListener('click', () => {
-  const newUrl = prompt('ادخل رابط صورة جديدة:', currentUser.profileImage);
-  if(newUrl){
-    currentUser.profileImage = newUrl;
-    localStorage.setItem('profileImage', newUrl);
-    loadProfile();
+profilePic.addEventListener('click', () => {
+  profilePicInput.click();
+});
+
+profilePicInput.addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (f) {
+    const r = new FileReader();
+    r.onload = () => {
+      profileImage = r.result;
+      localStorage.setItem('profileImage', r.result);
+      renderProfile();
+    };
+    r.readAsDataURL(f);
   }
 });
 
-// إدارة المنشورات
-let posts = JSON.parse(localStorage.getItem('posts') || '[]');
-
-function renderPosts(filter = ''){
+function renderPosts(filter = '') {
   postsList.innerHTML = '';
-  let filteredPosts = posts;
-  if(filter){
-    const f = filter.toLowerCase();
-    filteredPosts = posts.filter(p => p.username.toLowerCase().includes(f) || p.content.toLowerCase().includes(f));
-  }
-  filteredPosts.forEach((post, index) => {
-    const postEl = document.createElement('div');
-    postEl.className = 'post';
-    postEl.innerHTML = `
-      <div class="username">${post.username}</div>
-      <div class="content">${post.content}</div>
-      <button class="action-btn" onclick="deletePost(${index})">حذف</button>
-    `;
-    postsList.appendChild(postEl);
-  });
+  const f = filter.toLowerCase();
+  posts
+    .filter(
+      p =>
+        p.username.toLowerCase().includes(f) ||
+        (p.content && p.content.toLowerCase().includes(f))
+    )
+    .forEach(p => {
+      const d = document.createElement('div');
+      d.className = 'post';
+      d.innerHTML = `
+        <div class="post-author">${p.username}</div>
+        <div class="post-content">${p.content}</div>
+        ${
+          p.media
+            ? p.mediaType === 'image'
+              ? `<img src="${p.media}">`
+              : `<video src="${p.media}" controls></video>`
+            : ''
+        }
+      `;
+      postsList.appendChild(d);
+    });
 }
+
 renderPosts();
 
-// نشر منشور جديد
 addPostBtn.addEventListener('click', () => {
-  const content = postInput.value.trim();
-  if(content){
-    posts.unshift({ username: currentUser.username, content });
-    localStorage.setItem('posts', JSON.stringify(posts));
-    postInput.value = '';
-    renderPosts(searchInput.value);
+  const t = postText.value.trim();
+  const f = postMedia.files[0];
+  if (!t && !f) {
+    alert('اكتب شيئًا أو أضف وسائط');
+    return;
+  }
+  const newPost = {
+    username: authUser,
+    content: t,
+    media: null,
+    mediaType: null
+  };
+  if (f) {
+    const r = new FileReader();
+    r.onload = () => {
+      newPost.media = r.result;
+      newPost.mediaType = f.type.startsWith('image') ? 'image' : 'video';
+      posts.unshift(newPost);
+      localStorage.setItem('posts', JSON.stringify(posts));
+      postText.value = '';
+      postMedia.value = '';
+      renderPosts(searchInput.value);
+    };
+    r.readAsDataURL(f);
   } else {
-    alert('اكتب شيئاً لنشره!');
+    posts.unshift(newPost);
+    localStorage.setItem('posts', JSON.stringify(posts));
+    postText.value = '';
+    postMedia.value = '';
+    renderPosts(searchInput.value);
   }
 });
 
-// حذف منشور
-window.deletePost = function(index){
-  if(confirm('هل أنت متأكد من حذف المنشور؟')){
-    posts.splice(index,1);
-    localStorage.setItem('posts', JSON.stringify(posts));
-    renderPosts(searchInput.value);
-  }
-};
-
-// بحث في المستخدمين والمنشورات
 searchInput.addEventListener('input', () => {
   renderPosts(searchInput.value);
 });
