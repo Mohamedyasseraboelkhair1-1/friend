@@ -9,6 +9,7 @@
       font-family: Arial, sans-serif;
       background-color: #f0f2f5;
     }
+
     .header {
       background-color: #1877f2;
       color: white;
@@ -19,7 +20,6 @@
       position: relative;
     }
 
-    /* شريط البحث */
     .search-bar {
       position: absolute;
       top: 10px;
@@ -37,11 +37,34 @@
       font-size: 14px;
     }
 
+    .settings {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      display: none;
+      z-index: 999;
+    }
+
+    .settings-menu div {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
     .cover {
       width: 100%;
       height: 250px;
-      background: url('https://via.placeholder.com/1000x250/1877f2/ffffff?text=Cover+Photo')
-        center/cover no-repeat;
+      background: url('https://via.placeholder.com/1000x250/1877f2/ffffff?text=Cover+Photo') center/cover no-repeat;
       position: relative;
     }
 
@@ -88,27 +111,11 @@
       cursor: pointer;
     }
 
-    .settings {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      cursor: pointer;
-    }
-
-    .settings-menu {
-      position: absolute;
-      top: 50px;
-      right: 20px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 10px;
-      display: none;
-    }
-
-    .details {
+    .details, .edit-form, .search-results {
       margin-top: 20px;
-      display: none;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
     }
 
     .detail-item {
@@ -131,14 +138,26 @@
       border-radius: 10px;
       border: 4px solid white;
     }
+
+    .search-results div {
+      padding: 6px;
+      background: white;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
   <div class="header">
     صفحتي الشخصية
+    <div class="settings" onclick="toggleSettings()">⚙️</div>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء">
+      <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء" onkeydown="searchKeyDown(event)">
+    </div>
+    <div class="settings-menu" id="settingsMenu">
+      <div onclick="showDetails()">👁️ التفاصيل الشخصية</div>
+      <div onclick="showEditForm()">✏️ تغيير البيانات</div>
     </div>
   </div>
 
@@ -147,34 +166,37 @@
   </div>
 
   <div class="profile-info">
-    <div class="settings" onclick="toggleSettings()">⚙️</div>
-
-    <div class="settings-menu" id="settingsMenu">
-      <div onclick="showDetails()">📋 التفاصيل الشخصية</div>
-    </div>
-
     <div class="username">أهلاً <span id="user"></span>!</div>
     <div class="status" id="status" style="display: none;"></div>
 
-    <div class="details" id="detailsSection">
+    <div class="details" id="detailsSection" style="display: none;">
       <div class="detail-item">👤 اسم المستخدم: <span id="detailUsername"></span></div>
       <div class="detail-item">🔒 كلمة المرور: <span id="detailPassword">●●●●●</span>
         <button onclick="togglePassword()">إظهار</button>
       </div>
     </div>
 
+    <div class="edit-form" id="editForm" style="display: none;">
+      <label>اسم المستخدم الجديد:</label><br>
+      <input type="text" id="newUsername"><br>
+      <label>كلمة المرور الجديدة:</label><br>
+      <input type="text" id="newPassword"><br><br>
+      <button onclick="saveChanges()">حفظ التغييرات</button>
+    </div>
+
+    <div class="search-results" id="searchResults" style="display: none;"></div>
+
     <button class="logout-btn" id="logout">تسجيل الخروج</button>
   </div>
 
-  <!-- نافذة تكبير الصورة -->
   <div class="overlay" id="overlay" onclick="closeOverlay()">
     <img id="overlayImg" src="">
   </div>
 
   <script>
     const user = localStorage.getItem('authUser');
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userData = users.find(u => u.username === user);
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    let userData = users.find(u => u.username === user);
 
     const profilePic = document.getElementById('profile-pic');
     const overlay = document.getElementById('overlay');
@@ -193,7 +215,6 @@
         status.style.display = 'block';
       }
 
-      // تحميل صورة المستخدم إن وجدت
       const savedPic = localStorage.getItem('profilePic_' + user);
       if (savedPic) {
         profilePic.style.backgroundImage = `url(${savedPic})`;
@@ -205,6 +226,11 @@
       };
     }
 
+    document.getElementById('logout').onclick = () => {
+      localStorage.removeItem('authUser');
+      location.href = 'index.html';
+    };
+
     function toggleSettings() {
       const menu = document.getElementById('settingsMenu');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
@@ -212,36 +238,68 @@
 
     function showDetails() {
       document.getElementById('detailsSection').style.display = 'block';
+      document.getElementById('editForm').style.display = 'none';
+    }
+
+    function showEditForm() {
+      document.getElementById('editForm').style.display = 'block';
+      document.getElementById('detailsSection').style.display = 'none';
+      document.getElementById('newUsername').value = userData.username;
+      document.getElementById('newPassword').value = userData.password;
     }
 
     function togglePassword() {
       const span = document.getElementById('detailPassword');
       const real = span.getAttribute('data-real');
-      if (span.textContent === '●●●●●') {
-        span.textContent = real;
-      } else {
-        span.textContent = '●●●●●';
-      }
+      span.textContent = span.textContent === '●●●●●' ? real : '●●●●●';
     }
 
     function closeOverlay() {
       overlay.style.display = 'none';
     }
 
-    document.getElementById('logout').onclick = () => {
-      localStorage.removeItem('authUser');
-      location.href = 'index.html';
-    };
-
-    // شريط البحث — placeholder يتشال عند الكتابة
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', () => {
-      if (searchInput.value.length > 0) {
-        searchInput.placeholder = '';
-      } else {
-        searchInput.placeholder = 'ابحث عن الأصدقاء';
+    function saveChanges() {
+      const newUsername = document.getElementById('newUsername').value.trim();
+      const newPassword = document.getElementById('newPassword').value.trim();
+      if (!newUsername || !newPassword) {
+        alert('يرجى ملء البيانات');
+        return;
       }
-    });
+
+      const updatedUsers = users.map(u => {
+        if (u.username === user) {
+          u.username = newUsername;
+          u.password = newPassword;
+        }
+        return u;
+      });
+
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      localStorage.setItem('authUser', newUsername);
+      alert('تم تحديث البيانات');
+      location.reload();
+    }
+
+    function searchKeyDown(e) {
+      if (e.key === 'Enter') {
+        const query = e.target.value.trim();
+        if (!query) return;
+        const results = users.filter(u => u.username.includes(query));
+        const container = document.getElementById('searchResults');
+        container.innerHTML = '';
+        if (results.length === 0) {
+          container.innerHTML = '<div>لا يوجد مستخدم بهذا الاسم</div>';
+        } else {
+          results.forEach(u => {
+            const div = document.createElement('div');
+            div.textContent = u.username;
+            div.onclick = () => alert(`اسم المستخدم: ${u.username}`);
+            container.appendChild(div);
+          });
+        }
+        container.style.display = 'block';
+      }
+    }
   </script>
 
 </body>
