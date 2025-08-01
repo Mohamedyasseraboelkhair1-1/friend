@@ -1,17 +1,102 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Profil</title></head>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>الملف الشخصي</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; direction: rtl; }
+    body { font-family: Arial, sans-serif; background-color: #f0f2f5; }
+    .header {
+      background-color: #1877f2;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .cover {
+      width: 100%;
+      height: 250px;
+      background: url('https://via.placeholder.com/1000x250/1877f2/ffffff?text=Cover+Photo') center/cover no-repeat;
+      position: relative;
+    }
+    .profile-pic {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 5px solid white;
+      position: absolute;
+      bottom: -75px;
+      left: 30px;
+      background: url('https://via.placeholder.com/150') center/cover no-repeat;
+    }
+    .profile-info {
+      background-color: white;
+      padding: 20px;
+      margin: 100px auto 20px;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .username {
+      font-size: 26px;
+      font-weight: bold;
+      color: #1c1e21;
+      margin-bottom: 10px;
+    }
+    .status {
+      font-size: 16px;
+      color: #555;
+    }
+    .logout-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #e4e6eb;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .logout-btn:hover {
+      background-color: #d8dadf;
+    }
+  </style>
+</head>
 <body>
-  <h1>أهلاً <span id="user"></span>!</h1>
-  <button id="logout">Logout</button>
+
+  <div class="header">صفحتي الشخصية</div>
+
+  <div class="cover">
+    <div class="profile-pic" id="profile-pic"></div>
+  </div>
+
+  <div class="profile-info">
+    <div class="username">أهلاً <span id="user"></span>!</div>
+    <div class="status" id="status" style="display: none;"></div>
+    <button class="logout-btn" id="logout">تسجيل الخروج</button>
+  </div>
+
   <script>
     const user = localStorage.getItem('authUser');
-    if (!user) location.href = 'index.html';
-    else document.getElementById('user').textContent = user;
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userData = users.find(u => u.username === user);
+
+    if (!user || !userData) {
+      location.href = 'index.html';
+    } else {
+      document.getElementById('user').textContent = userData.username;
+
+      if (userData.status === 'متزوج' || userData.status === 'خاطب') {
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = `الحالة الاجتماعية: ${userData.status}`;
+        statusEl.style.display = 'block';
+      }
+    }
+
     document.getElementById('logout').onclick = () => {
       localStorage.removeItem('authUser');
       location.href = 'index.html';
     };
   </script>
+
 </body>
 </html>
