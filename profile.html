@@ -2,61 +2,173 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>الملف الشخصي</title>
+  <title>صفحتي الشخصية</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; direction: rtl; }
-    body { font-family: Arial, sans-serif; background-color: #f0f2f5; }
-    .header {
-      background-color: #1877f2; color: white;
-      padding: 15px; text-align: center;
-      font-size: 24px; font-weight: bold;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
     }
-    .cover { width: 100%; height: 250px;
+    .header {
+      background-color: #1877f2;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      position: relative;
+    }
+
+    /* شريط البحث */
+    .search-bar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border-radius: 20px;
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      color: white;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .cover {
+      width: 100%;
+      height: 250px;
       background: url('https://via.placeholder.com/1000x250/1877f2/ffffff?text=Cover+Photo')
         center/cover no-repeat;
       position: relative;
     }
+
     .profile-pic {
-      width: 150px; height: 150px;
-      border-radius: 50%; border: 5px solid white;
-      position: absolute; bottom: -75px; left: 30px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 5px solid white;
+      position: absolute;
+      bottom: -75px;
+      left: 30px;
       background: center/cover no-repeat #ddd;
+      cursor: pointer;
     }
+
     .profile-info {
-      background: white; padding: 20px;
-      margin: 100px auto 20px; max-width: 800px;
-      border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background-color: white;
+      padding: 20px;
+      margin: 100px auto 20px;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
     }
-    .username { font-size: 26px; font-weight: bold;
-      color: #1c1e21; margin-bottom: 10px;
+
+    .username {
+      font-size: 26px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #1c1e21;
     }
-    .status { font-size: 16px; color: #555; }
+
+    .status {
+      font-size: 16px;
+      color: #555;
+    }
+
     .logout-btn {
-      margin-top: 20px; padding: 10px 20px;
-      background-color: #e4e6eb; border: none;
-      border-radius: 6px; cursor: pointer;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #e4e6eb;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
-    .logout-btn:hover { background-color: #d8dadf; }
-    input[type="file"] {
-      margin-top: 15px;
+
+    .settings {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      display: none;
+    }
+
+    .details {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .detail-item {
+      margin-bottom: 10px;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      border: 4px solid white;
     }
   </style>
 </head>
 <body>
 
-  <div class="header">صفحتي الشخصية</div>
+  <div class="header">
+    صفحتي الشخصية
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء">
+    </div>
+  </div>
+
   <div class="cover">
     <div class="profile-pic" id="profile-pic"></div>
   </div>
 
   <div class="profile-info">
+    <div class="settings" onclick="toggleSettings()">⚙️</div>
+
+    <div class="settings-menu" id="settingsMenu">
+      <div onclick="showDetails()">📋 التفاصيل الشخصية</div>
+    </div>
+
     <div class="username">أهلاً <span id="user"></span>!</div>
     <div class="status" id="status" style="display: none;"></div>
-    
-    <label>تحميل صورة شخصية:</label><br>
-    <input type="file" id="imgUpload" accept="image/*"><br>
-    
+
+    <div class="details" id="detailsSection">
+      <div class="detail-item">👤 اسم المستخدم: <span id="detailUsername"></span></div>
+      <div class="detail-item">🔒 كلمة المرور: <span id="detailPassword">●●●●●</span>
+        <button onclick="togglePassword()">إظهار</button>
+      </div>
+    </div>
+
     <button class="logout-btn" id="logout">تسجيل الخروج</button>
+  </div>
+
+  <!-- نافذة تكبير الصورة -->
+  <div class="overlay" id="overlay" onclick="closeOverlay()">
+    <img id="overlayImg" src="">
   </div>
 
   <script>
@@ -64,42 +176,72 @@
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     const userData = users.find(u => u.username === user);
 
+    const profilePic = document.getElementById('profile-pic');
+    const overlay = document.getElementById('overlay');
+    const overlayImg = document.getElementById('overlayImg');
+
     if (!user || !userData) {
       location.href = 'index.html';
     } else {
       document.getElementById('user').textContent = userData.username;
+      document.getElementById('detailUsername').textContent = userData.username;
+      document.getElementById('detailPassword').setAttribute('data-real', userData.password);
+
       if (userData.status === 'متزوج' || userData.status === 'خاطب') {
-        const s = document.getElementById('status');
-        s.textContent = `الحالة الاجتماعية: ${userData.status}`;
-        s.style.display = 'block';
+        const status = document.getElementById('status');
+        status.textContent = `الحالة الاجتماعية: ${userData.status}`;
+        status.style.display = 'block';
       }
 
-      const profilePic = document.getElementById('profile-pic');
-      // إذا كان مستخدم رفع صورة قبل كده، نعرضها
-      const saved = localStorage.getItem('profilePic_' + user);
-      if (saved) {
-        profilePic.style.backgroundImage = `url(${saved})`;
+      // تحميل صورة المستخدم إن وجدت
+      const savedPic = localStorage.getItem('profilePic_' + user);
+      if (savedPic) {
+        profilePic.style.backgroundImage = `url(${savedPic})`;
+        overlayImg.src = savedPic;
       }
 
-      const input = document.getElementById('imgUpload');
-      input.onchange = e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataURL = reader.result;
-          profilePic.style.backgroundImage = `url(${dataURL})`;
-          // نخزن الصورة في localStorage
-          localStorage.setItem('profilePic_' + user, dataURL);
-        };
-        reader.readAsDataURL(file);
+      profilePic.onclick = () => {
+        if (overlayImg.src) overlay.style.display = 'flex';
       };
+    }
+
+    function toggleSettings() {
+      const menu = document.getElementById('settingsMenu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function showDetails() {
+      document.getElementById('detailsSection').style.display = 'block';
+    }
+
+    function togglePassword() {
+      const span = document.getElementById('detailPassword');
+      const real = span.getAttribute('data-real');
+      if (span.textContent === '●●●●●') {
+        span.textContent = real;
+      } else {
+        span.textContent = '●●●●●';
+      }
+    }
+
+    function closeOverlay() {
+      overlay.style.display = 'none';
     }
 
     document.getElementById('logout').onclick = () => {
       localStorage.removeItem('authUser');
       location.href = 'index.html';
     };
+
+    // شريط البحث — placeholder يتشال عند الكتابة
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => {
+      if (searchInput.value.length > 0) {
+        searchInput.placeholder = '';
+      } else {
+        searchInput.placeholder = 'ابحث عن الأصدقاء';
+      }
+    });
   </script>
 
 </body>
