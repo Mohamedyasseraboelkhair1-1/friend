@@ -13,27 +13,26 @@
     }
     .header {
       background-color: #fff;
-      padding: 15px;
-      text-align: center;
+      padding: 15px 20px;
       font-size: 24px;
       font-weight: bold;
       position: relative;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .header span {
       color: #1877f2;
     }
     .settings {
-      position: absolute;
-      top: 15px;
-      left: 15px;
       cursor: pointer;
       font-size: 20px;
     }
     .settings-menu {
       position: absolute;
       top: 55px;
-      left: 10px;
+      right: 20px;
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 6px;
@@ -47,9 +46,7 @@
       border-bottom: 1px solid #eee;
     }
     .search-box {
-      position: absolute;
-      top: 15px;
-      right: 15px;
+      margin-left: auto;
     }
     .search-box input {
       padding: 6px;
@@ -142,6 +139,20 @@
       margin-left: 10px;
       cursor: pointer;
     }
+    .comments {
+      margin-top: 10px;
+    }
+    .comments input {
+      width: 80%;
+      padding: 6px;
+      margin-top: 5px;
+    }
+    .comments button {
+      padding: 6px 12px;
+      background: #ccc;
+      border: none;
+      cursor: pointer;
+    }
     #searchResults {
       background: white;
       border: 1px solid #ccc;
@@ -149,7 +160,7 @@
       overflow-y: auto;
       position: absolute;
       top: 45px;
-      right: 15px;
+      left: 20px;
       z-index: 1000;
       width: 200px;
       display: none;
@@ -164,11 +175,17 @@
 <body>
 
 <div class="header">
-  <span>Friend</span>
-  <div class="settings">⚙️</div>
   <div class="search-box">
     <input type="text" placeholder="ابحث عن الأصدقاء أو المنشورات" id="searchInput" />
     <div id="searchResults"></div>
+  </div>
+
+  <span>Friend</span>
+
+  <div class="settings">⚙️</div>
+  <div class="settings-menu" id="settingsMenu">
+    <div onclick="showSection('detailsSection')">التفاصيل الشخصية</div>
+    <div onclick="showSection('editSection')">تعديل التفاصيل الشخصية</div>
   </div>
 </div>
 
@@ -189,11 +206,6 @@
   <div id="postsContainer"></div>
 </div>
 
-<div class="settings-menu" id="settingsMenu">
-  <div onclick="showSection('detailsSection')">التفاصيل الشخصية</div>
-  <div onclick="showSection('editSection')">تعديل الاسم وكلمة المرور</div>
-</div>
-
 <div class="profile-info section" id="detailsSection">
   <p><strong>اسم المستخدم:</strong> <span id="detailsUsername"></span></p>
   <p><strong>كلمة المرور:</strong> <span id="detailsPassword"></span></p>
@@ -208,5 +220,6 @@
 </div>
 
 <script src="profile.js"></script>
+
 </body>
 </html>
