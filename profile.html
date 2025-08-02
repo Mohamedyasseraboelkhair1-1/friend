@@ -1,58 +1,59 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>الملف الشخصي</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<header>
-  <!-- الإعدادات على اليسار -->
-  <div class="settings-container">
-    <div class="settings-btn" id="settingsBtn">⚙️</div>
-    <div class="settings-menu" id="settingsMenu">
-      <div id="showDetails">التفاصيل الشخصية</div>
-      <div id="showEdit">تعديل المعلومات</div>
+  <header>
+    <div class="left-section">
+      <div id="searchBox">
+        <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء" />
+      </div>
     </div>
-  </div>
 
-  <!-- اللوجو في المنتصف -->
-  <div class="friend-logo">Friend</div>
+    <div class="center-section">
+      <div class="logo">Friend</div>
+    </div>
 
-  <!-- البحث على اليمين -->
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="ابحث عن الأصدقاء">
-  </div>
-</header>
+    <div class="right-section">
+      <div id="settingsBtn">⚙️</div>
+      <div id="settingsMenu" class="hidden">
+        <div id="showDetails">التفاصيل الشخصية</div>
+        <div id="showEdit">تعديل المعلومات</div>
+      </div>
+    </div>
+  </header>
 
-<div class="profile-area">
-  <div class="profile-pic" id="profilePic" title="اضغط لتغيير الصورة"></div>
-  <input type="file" id="profilePicInput" accept="image/*" class="hidden">
-  <h2 class="username" id="displayUsername"></h2>
-</div>
+  <section class="profile">
+    <div class="profile-pic" id="profilePic" title="اضغط لتغيير الصورة"></div>
+    <input type="file" id="profilePicInput" accept="image/*" class="hidden" />
+    <h2 id="displayUsername"></h2>
+  </section>
 
-<div class="settings-content hidden" id="detailsContent">
-  <strong>اسم المستخدم:</strong> <span id="detailUsername"></span><br>
-  <strong>كلمة المرور:</strong> <span id="detailPassword"></span>
-</div>
+  <section id="detailsContent" class="hidden info-box">
+    <p><strong>اسم المستخدم:</strong> <span id="detailUsername"></span></p>
+    <p><strong>كلمة المرور:</strong> <span id="detailPassword"></span></p>
+  </section>
 
-<div class="settings-content hidden" id="editContent">
-  <label>اسم المستخدم:</label><br>
-  <input type="text" id="editUsername"><br>
-  <label>كلمة المرور:</label><br>
-  <input type="password" id="editPassword"><br>
-  <button id="saveEditBtn">حفظ</button>
-</div>
+  <section id="editContent" class="hidden info-box">
+    <label>اسم المستخدم:</label>
+    <input type="text" id="editUsername" />
+    <label>كلمة المرور:</label>
+    <input type="password" id="editPassword" />
+    <button id="saveEditBtn">حفظ</button>
+  </section>
 
-<div class="post-area">
-  <textarea id="postText" placeholder="اكتب منشورك..."></textarea>
-  <input type="file" id="postMedia" accept="image/*,video/*">
-  <button id="addPostBtn">نشر</button>
-</div>
+  <section class="post-area">
+    <textarea id="postText" placeholder="اكتب منشورك..."></textarea>
+    <input type="file" id="postMedia" accept="image/*,video/*" />
+    <button id="addPostBtn">نشر</button>
+  </section>
 
-<div id="postsList"></div>
+  <div id="postsList"></div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
