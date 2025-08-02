@@ -5,10 +5,10 @@ let posts = JSON.parse(localStorage.getItem('posts') || '[]');
 
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsMenu = document.getElementById('settingsMenu');
-const detailsContent = document.getElementById('detailsContent');
-const editContent = document.getElementById('editContent');
 const showDetails = document.getElementById('showDetails');
 const showEdit = document.getElementById('showEdit');
+const detailsContent = document.getElementById('detailsContent');
+const editContent = document.getElementById('editContent');
 const detailUsername = document.getElementById('detailUsername');
 const detailPassword = document.getElementById('detailPassword');
 const editUsername = document.getElementById('editUsername');
@@ -19,20 +19,18 @@ const profilePic = document.getElementById('profilePic');
 const profilePicInput = document.getElementById('profilePicInput');
 const displayUsername = document.getElementById('displayUsername');
 
-const addPostBtn = document.getElementById('addPostBtn');
 const postText = document.getElementById('postText');
 const postMedia = document.getElementById('postMedia');
+const addPostBtn = document.getElementById('addPostBtn');
 const postsList = document.getElementById('postsList');
-
 const searchInput = document.getElementById('searchInput');
 
 function renderProfile() {
   displayUsername.textContent = authUser;
-  if (profileImage) profilePic.style.backgroundImage = `url('${profileImage}')`;
-  else profilePic.style.backgroundImage = `url('https://via.placeholder.com/120?text=User')`;
+  profilePic.style.backgroundImage = profileImage
+    ? `url('${profileImage}')`
+    : `url('https://via.placeholder.com/120?text=User')`;
 }
-
-renderProfile();
 
 settingsBtn.addEventListener('click', () => {
   settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
@@ -71,15 +69,15 @@ profilePic.addEventListener('click', () => {
 });
 
 profilePicInput.addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (f) {
-    const r = new FileReader();
-    r.onload = () => {
-      profileImage = r.result;
-      localStorage.setItem('profileImage', r.result);
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      profileImage = reader.result;
+      localStorage.setItem('profileImage', profileImage);
       renderProfile();
     };
-    r.readAsDataURL(f);
+    reader.readAsDataURL(file);
   }
 });
 
@@ -110,8 +108,6 @@ function renderPosts(filter = '') {
     });
 }
 
-renderPosts();
-
 addPostBtn.addEventListener('click', () => {
   const t = postText.value.trim();
   const f = postMedia.files[0];
@@ -126,9 +122,9 @@ addPostBtn.addEventListener('click', () => {
     mediaType: null
   };
   if (f) {
-    const r = new FileReader();
-    r.onload = () => {
-      newPost.media = r.result;
+    const reader = new FileReader();
+    reader.onload = () => {
+      newPost.media = reader.result;
       newPost.mediaType = f.type.startsWith('image') ? 'image' : 'video';
       posts.unshift(newPost);
       localStorage.setItem('posts', JSON.stringify(posts));
@@ -136,7 +132,7 @@ addPostBtn.addEventListener('click', () => {
       postMedia.value = '';
       renderPosts(searchInput.value);
     };
-    r.readAsDataURL(f);
+    reader.readAsDataURL(f);
   } else {
     posts.unshift(newPost);
     localStorage.setItem('posts', JSON.stringify(posts));
@@ -149,3 +145,6 @@ addPostBtn.addEventListener('click', () => {
 searchInput.addEventListener('input', () => {
   renderPosts(searchInput.value);
 });
+
+renderProfile();
+renderPosts();
