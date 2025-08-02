@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>الصفحة الرئيسية</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <button id="settingsBtn">الإعدادات ⚙️</button>
+    <div id="settingsPanel" class="hidden">
+      <div id="personalDetails" class="settings-section">
+        <h3>التفاصيل الشخصية</h3>
+        <p>اسم المستخدم: <span id="profileUsername"></span></p>
+        <p>
+          كلمة المرور:
+          <input type="password" id="profilePassword" readonly />
+          <button id="togglePasswordBtn">اظهار</button>
+        </p>
+      </div>
+
+      <div id="editInfo" class="settings-section">
+        <h3>تعديل المعلومات</h3>
+        <form id="editForm">
+          <input type="text" id="editUsername" placeholder="اسم المستخدم الجديد" required />
+          <input type="password" id="editPassword" placeholder="كلمة المرور الجديدة" required />
+          <button type="submit">تعديل</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <aside>
+    <input type="search" id="searchInput" placeholder="ابحث عن الأصدقاء والمنشورات" />
+  </aside>
+
+  <main>
+    <div id="profileSection">
+      <div id="profileImageWrapper">
+        <img src="default-profile.png" alt="صورة الملف الشخصي" id="profileImage" />
+        <input type="file" id="profileImageInput" accept="image/*" />
+      </div>
+      <span id="profileName"></span>
+    </div>
+
+    <section id="postSection">
+      <textarea id="postContent" placeholder="اكتب منشورك هنا..."></textarea>
+      <input type="file" id="postMediaInput" accept="image/*,video/*" multiple />
+      <button id="postBtn">نشر</button>
+
+      <div id="postsContainer"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
